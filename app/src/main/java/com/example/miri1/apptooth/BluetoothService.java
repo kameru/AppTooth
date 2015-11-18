@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
  * Created by miri1 on 2015-11-15.
  */
 public class BluetoothService extends Service {
-    BluetoothReceiver receiver = new BluetoothReceiver();
 
     @Override
     public void onCreate() {
