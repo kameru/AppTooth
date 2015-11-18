@@ -15,12 +15,13 @@ public class BluetoothReceiver extends BroadcastReceiver {
         Intent runService = new Intent(context, BluetoothService.class);
 
         if(action.equals("android.bluetooth.device.action.ACL_CONNECTED")) {
-                runActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(runActivity);
-                context.startService(runService);
-            }
-            if(action.equals("android.bluetooth.device.action.ACL_CONNECTED")) {
-                context.stopService(runService);
-            }
+            runActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(runActivity);
+            context.startService(runService);
         }
+
+        if(action.equals("android.bluetooth.device.action.ACL_DISCONNECTED")) {
+            context.stopService(runService);
+        }
+    }
 }

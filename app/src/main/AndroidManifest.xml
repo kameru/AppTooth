@@ -32,6 +32,7 @@
 
                 <action android:name="android.bluetooth.device.action.STATE_CHANGED" />
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED"/>
             </intent-filter>
         </receiver>
 
