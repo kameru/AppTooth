@@ -1,10 +1,8 @@
 package com.example.miri1.apptooth;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 
 /**
  * Created by miri1 on 2015-11-17.
@@ -28,7 +26,6 @@ public class DBManager extends SQLiteOpenHelper{
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
@@ -37,13 +34,15 @@ public class DBManager extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_DEVICE_TABLE = "CREATE TABLE" + TABLE_DEVICE +
+        String CREATE_DEVICE_TABLE = "DROP TABLE IF NOT EXISTS " +
+                "CREATE TABLE" + TABLE_DEVICE +
                 "(" +
                     KEY_DEVICE_ID + " INTEGER PRIMARY KEY," +
                     KEY_DEVICE_NAME + " TEXT" +
                 ")";
 
-        String CREATE_APP_TABLE = " CREATE TABLE" + TABLE_APPS +
+        String CREATE_APP_TABLE = "DROP TABLE IF NOT EXISTS " +
+                "CREATE TABLE" + TABLE_APPS +
                 "(" +
                     KEY_APP_ID + " INTEGER PRIMARY KEY," +
                     KEY_DEVICE_ID_FK + " INTEGER REFERENCE, " +
