@@ -1,32 +1,43 @@
 package com.example.miri1.apptooth;
 
-import android.app.ActivityManager;
-
 /**
  * Created by miri1 on 2015-11-19.
  */
 public class AppInfo {
-    private ActivityManager.RunningServiceInfo info;
+    private String packageName;
+    private String appName;
     private int runningTime;
 
-    public AppInfo(ActivityManager.RunningServiceInfo info, int runningTime) {
-        this.info = info;
+    public AppInfo(String packageName) {
+        this.packageName = packageName;
+        runningTime = 0;
+    }
+    public AppInfo(String packageName, int runningTime) {
+        this.packageName = packageName;
         this.runningTime = runningTime;
     }
 
-    public ActivityManager.RunningServiceInfo getInfo() {
-        return info;
+    public String getPackageName() {
+        return packageName;
     }
 
-    public void setInfo(ActivityManager.RunningServiceInfo info) {
-        this.info = info;
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public int getRunningTime() {
         return runningTime;
     }
 
-    public void setRunningTime(int runningTime) {
-        this.runningTime = runningTime;
+    public void addRunningTime(){
+        runningTime++;
     }
 }
