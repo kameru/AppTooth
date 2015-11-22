@@ -1,12 +1,15 @@
 package com.example.miri1.apptooth;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(deviceKey != null) {
             Cursor deviceCursor = db.rawQuery("SELECT * FROM devices WHERE id = '" + deviceKey + "';", null);
-            Cursor appCursor = db.rawQuery("SELECT * FROM apps WHERE deviceId = '" + deviceKey + "' ORDER BY runningTime;", null);
+            Cursor appCursor = db.rawQuery("SELECT * FROM apps WHERE deviceId = '" + deviceKey + "' ORDER BY runningTime DESC;", null);
 
             deviceCursor.moveToFirst();
             appCursor.moveToFirst();
@@ -39,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
                 actionBar.setTitle(deviceName);
 
-                ArrayList<String> appList = new ArrayList<>();
-                ArrayList<AppInfo> infoList = new ArrayList<>();
+                final ArrayList<String> appList = new ArrayList<>();
+                final ArrayList<AppInfo> infoList = new ArrayList<>();
 
                 while (appCursor.moveToNext()) {
                     appList.add(appCursor.getString(2));
@@ -48,6 +51,16 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 ListView listView = (ListView) findViewById(R.id.listView);
+                CustomAdapter adapter = new CustomAdapter(this, R.layout.custom_row_layout, infoList);
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        PackageManager pm = getPackageManager();
+                        Intent launchIntent = pm.getLaunchIntentForPackage(infoList.get(position).getPackageName());
+                        startActivity(launchIntent);
+                    }
+                });
             }
         }
    }
