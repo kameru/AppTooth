@@ -23,6 +23,7 @@ public class BluetoothService extends IntentService {
     private ActivityManager activityManager;
     private Boolean running = true;
     private String launcher;
+    private String MAC;
 
     SQLiteDatabase db;
     DBManager dbManager;
@@ -42,11 +43,13 @@ public class BluetoothService extends IntentService {
 
         dbManager = new DBManager(this);
         db = dbManager.getWritableDatabase();
+
 //        setdata
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        MAC = intent.getStringExtra("address");
         final Thread mThread = new Thread() {
             @Override
             public void run() {
@@ -54,8 +57,8 @@ public class BluetoothService extends IntentService {
                     long startTime = System.currentTimeMillis();
                     activityManager = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
                     String packageName = activityManager.getRunningAppProcesses().get(0).processName;
-                    if(!info.containsKey(packageName) && (!packageName.equals("com.example.miri1.apptooth") || !packageName.equals(launcher))){
-                        info.put(packageName,new AppInfo(packageName));
+                    if (!info.containsKey(packageName) && !packageName.equals("com.example.miri1.apptooth") && !packageName.equals(launcher)) {
+                        info.put(packageName, new AppInfo(packageName));
                         info.get(packageName).setAppName(getAppName(packageName));
                     }
 
@@ -75,24 +78,30 @@ public class BluetoothService extends IntentService {
         running = false;
         Collection value = info.values();
         Iterator itr = value.iterator();
-        Cursor cursor;
+        Cursor cursor = null;
         String sql;
 
         while(itr.hasNext()){
             AppInfo appInfo = (AppInfo) itr.next();
-            cursor = db.rawQuery("SELECT * FROM apps WHERE id = '"+ appInfo.getPackageName()+ "';",null );
-            if(cursor != null){
-                sql = "UPDATE apps SET runningTime = '" + appInfo.getRunningTime() + "' WHERE id = '" + appInfo.getPackageName() + "';";
+            cursor = db.rawQuery("SELECT * FROM apps " +
+                    "WHERE id = '"+ appInfo.getPackageName()+ "' and deviceId = '"+ MAC + "';",null );
+            cursor.moveToFirst();
+            if(cursor.getCount() != 0)
+            {
+                sql = "UPDATE apps SET runningTime = '" + appInfo.getRunningTime() +
+                        "' WHERE id = '" + appInfo.getPackageName() + "' and deviceId = '"+ MAC +"';";
                 db.execSQL(sql);
             }
             else{
                 ContentValues values = new ContentValues();
                 values.put("id", appInfo.getPackageName());
+                values.put("deviceId",MAC);
                 values.put("name", appInfo.getAppName());
                 values.put("runningTime", appInfo.getRunningTime());
                 db.insert("apps",null,values);
             }
         }
+        cursor.close();
         super.onDestroy();
     }
 
@@ -105,5 +114,18 @@ public class BluetoothService extends IntentService {
             ai = null;
         }
         return (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
+    }
+
+    public void setData() {
+        Cursor cursor;
+
+        cursor = db.rawQuery("SELECT * FROM apps " +
+                "WHERE deviceId = '" + MAC + "';", null);
+
+        cursor.moveToFirst();
+        while (cursor.moveToNext()) {
+            AppInfo appInfo = new AppInfo(cursor.getString(0), cursor.getInt(3));
+            appInfo.setAppName(cursor.getString(2));
+        }
     }
 }

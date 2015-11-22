@@ -36,14 +36,14 @@ public class DBManager extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         String CREATE_DEVICE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_DEVICE +
                 "(" +
-                    KEY_DEVICE_ID + " INTEGER PRIMARY KEY," +
+                    KEY_DEVICE_ID + " TEXT PRIMARY KEY," +
                     KEY_DEVICE_NAME + " TEXT" +
                 ")";
 
         String CREATE_APP_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_APPS +
                 "(" +
                     KEY_APP_ID + " TEXT PRIMARY KEY," +
-                    KEY_DEVICE_ID_FK + " INTEGER REFERENCE, " +
+                    KEY_DEVICE_ID_FK + " TEXT REFERENCE, " +
                     KEY_APP_NAME + " TEXT," +
                     KEY_APP_TIME + " INTEGER" +
                 ")";
