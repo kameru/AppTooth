@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(deviceKey != null) {
             Cursor deviceCursor = db.rawQuery("SELECT * FROM devices WHERE id = '" + deviceKey + "';", null);
-            Cursor appCursor = db.rawQuery("SELECT * FROM apps WHERE deviceId = '" + deviceKey + "';", null);
+            Cursor appCursor = db.rawQuery("SELECT * FROM apps WHERE deviceId = '" + deviceKey + "' ORDER BY runningTime;", null);
 
             deviceCursor.moveToFirst();
             appCursor.moveToFirst();
@@ -41,15 +40,14 @@ public class MainActivity extends AppCompatActivity {
                 actionBar.setTitle(deviceName);
 
                 ArrayList<String> appList = new ArrayList<>();
+                ArrayList<AppInfo> infoList = new ArrayList<>();
 
                 while (appCursor.moveToNext()) {
                     appList.add(appCursor.getString(2));
+                    infoList.add(new AppInfo(appCursor.getString(0), appCursor.getString(2), appCursor.getInt(3)));
                 }
 
-
-                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, appList);
                 ListView listView = (ListView) findViewById(R.id.listView);
-                listView.setAdapter(adapter);
             }
         }
    }

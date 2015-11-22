@@ -8,12 +8,14 @@ public class AppInfo {
     private String appName;
     private int runningTime;
 
-    public AppInfo(String packageName) {
-        this.packageName = packageName;
-        runningTime = 0;
-    }
     public AppInfo(String packageName, int runningTime) {
         this.packageName = packageName;
+        this.runningTime = runningTime;
+    }
+
+    public AppInfo(String packageName, String appName, int runningTime) {
+        this.packageName = packageName;
+        this.appName = appName;
         this.runningTime = runningTime;
     }
 

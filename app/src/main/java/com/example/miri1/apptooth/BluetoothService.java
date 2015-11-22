@@ -44,7 +44,7 @@ public class BluetoothService extends IntentService {
         dbManager = new DBManager(this);
         db = dbManager.getWritableDatabase();
 
-//        setdata
+        setData();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BluetoothService extends IntentService {
                     activityManager = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
                     String packageName = activityManager.getRunningAppProcesses().get(0).processName;
                     if (!info.containsKey(packageName) && !packageName.equals("com.example.miri1.apptooth") && !packageName.equals(launcher)) {
-                        info.put(packageName, new AppInfo(packageName));
+                        info.put(packageName, new AppInfo(packageName,0));
                         info.get(packageName).setAppName(getAppName(packageName));
                     }
 
