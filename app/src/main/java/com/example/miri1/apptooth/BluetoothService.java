@@ -104,6 +104,9 @@ public class BluetoothService extends IntentService {
                 db.insert("apps",null,values);
             }
         }
+        if(cursor != null) {
+            cursor.close();
+        }
         super.onDestroy();
     }
 
@@ -129,5 +132,6 @@ public class BluetoothService extends IntentService {
             AppInfo appInfo = new AppInfo(cursor.getString(0), cursor.getInt(3));
             appInfo.setAppName(cursor.getString(2));
         }
+        cursor.close();
     }
 }

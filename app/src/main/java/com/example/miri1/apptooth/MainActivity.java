@@ -1,22 +1,23 @@
 package com.example.miri1.apptooth;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
-    android.support.v7.app.ActionBar actionBar;
+public class MainActivity extends Activity {
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,50 +25,43 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         DBManager dbManager = new DBManager(this);
-        SQLiteDatabase db = dbManager.getReadableDatabase();
+        final SQLiteDatabase db = dbManager.getReadableDatabase();
 
         Intent intent = getIntent();
 
         BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-        String deviceKey = device.getAddress();
 
-        actionBar = getSupportActionBar();
+        actionBar = getActionBar();
+        ArrayList<String> DeviceName = new ArrayList<>();
+        final ArrayList<DeviceInfo> deviceList = new ArrayList<>();
 
-        if(deviceKey != null) {
-            Cursor deviceCursor = db.rawQuery("SELECT * FROM devices WHERE id = '" + deviceKey + "';", null);
-            Cursor appCursor = db.rawQuery("SELECT * FROM apps WHERE deviceId = '" + deviceKey + "' ORDER BY runningTime DESC;", null);
-
-            deviceCursor.moveToFirst();
-            appCursor.moveToFirst();
-
-            if (deviceCursor.getCount() != 0 && appCursor.getCount() != 0) {
-                String deviceName = deviceCursor.getString(1);
-
-                actionBar.setTitle(deviceName);
-
-                final ArrayList<String> appList = new ArrayList<>();
-                final ArrayList<AppInfo> infoList = new ArrayList<>();
-
-                while (appCursor.moveToNext()) {
-                    appList.add(appCursor.getString(2));
-                    infoList.add(new AppInfo(appCursor.getString(0), appCursor.getString(2), appCursor.getInt(3)));
-                }
-
-                ListView listView = (ListView) findViewById(R.id.listView);
-                CustomAdapter adapter = new CustomAdapter(this, R.layout.custom_row_layout, infoList);
-                listView.setAdapter(adapter);
-
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        PackageManager pm = getPackageManager();
-                        Intent launchIntent = pm.getLaunchIntentForPackage(infoList.get(position).getPackageName());
-                        startActivity(launchIntent);
-                    }
-                });
+        if(device == null) {
+            Cursor deviceCursor = db.rawQuery("SELECT * FROM devices;", null);
+            while (deviceCursor.moveToNext()) {
+                DeviceName.add(deviceCursor.getString(1));
+                deviceList.add(new DeviceInfo(deviceCursor.getString(0),deviceCursor.getString(1)));
             }
+
+            ListView listView = (ListView) findViewById(R.id.deviceListView);
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, DeviceName);
+
+            listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    startAppList(deviceList.get(position).getDeviceID(), deviceList.get(position).getDeviceName());
+                }
+            });
+            deviceCursor.close();
         }
-   }
+        if(device != null) {
+            String deviceKey = device.getAddress();
+            String deviceName = device.getName();
+            startAppList(deviceKey,deviceName);
+        }
+        db.close();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,5 +83,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startAppList(String key, String name) {
+        Intent startAppList = new Intent(this, AppViewActivity.class);
+        startAppList.putExtra("name",name);
+        startAppList.putExtra("address", key);
+        startActivity(startAppList);
     }
 }

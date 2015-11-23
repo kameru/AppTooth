@@ -18,7 +18,7 @@ public class BluetoothReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         ContentValues values = new ContentValues();
 
-        Intent runActivity = new Intent(context, MainActivity.class);
+        Intent runActivity = new Intent(context, AppViewActivity.class);
         Intent runService = new Intent(context, BluetoothService.class);
 
         DBManager dbManager = new DBManager(context);
@@ -40,6 +40,8 @@ public class BluetoothReceiver extends BroadcastReceiver {
                 db.insert("devices", null, values);
             }
 
+            runActivity.putExtra("address",address);
+            runActivity.putExtra("name",name);
             runService.putExtra("address",address);
 
             runActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
