@@ -1,5 +1,6 @@
 package com.example.miri1.apptooth;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -27,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        String deviceKey = intent.getStringExtra("address");
+        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+        String deviceKey = device.getAddress();
 
         actionBar = getSupportActionBar();
 
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
             deviceCursor.moveToFirst();
             appCursor.moveToFirst();
+
             if (deviceCursor.getCount() != 0 && appCursor.getCount() != 0) {
                 String deviceName = deviceCursor.getString(1);
 
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 ListView listView = (ListView) findViewById(R.id.listView);
                 CustomAdapter adapter = new CustomAdapter(this, R.layout.custom_row_layout, infoList);
                 listView.setAdapter(adapter);
+
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -23,13 +23,15 @@ public class BluetoothReceiver extends BroadcastReceiver {
 
         DBManager dbManager = new DBManager(context);
         SQLiteDatabase db = dbManager.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM devices;",null);
+        Cursor cursor;
 
         if(action.equals("android.bluetooth.device.action.ACL_CONNECTED")) {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
             String address = device.getAddress();
             String name = device.getName();
+
+            cursor = db.rawQuery("SELECT * FROM devices WHERE id = '" + address + "';",null);
 
             cursor.moveToFirst();
             if(cursor.getCount() == 0) {
@@ -38,12 +40,10 @@ public class BluetoothReceiver extends BroadcastReceiver {
                 db.insert("devices", null, values);
             }
 
-            runActivity.putExtra("address", address);
             runService.putExtra("address",address);
 
             runActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(runActivity);
-
             context.startService(runService);
         }
 
