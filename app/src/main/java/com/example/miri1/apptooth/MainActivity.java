@@ -2,7 +2,9 @@ package com.example.miri1.apptooth;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,21 +31,21 @@ public class MainActivity extends Activity {
 
         Intent intent = getIntent();
 
-        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+        final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
         actionBar = getActionBar();
         ArrayList<String> DeviceName = new ArrayList<>();
         final ArrayList<DeviceInfo> deviceList = new ArrayList<>();
 
         if(device == null) {
-            Cursor deviceCursor = db.rawQuery("SELECT * FROM devices;", null);
+            final Cursor deviceCursor = db.rawQuery("SELECT * FROM devices;", null);
             while (deviceCursor.moveToNext()) {
                 DeviceName.add(deviceCursor.getString(1));
                 deviceList.add(new DeviceInfo(deviceCursor.getString(0),deviceCursor.getString(1)));
             }
 
-            ListView listView = (ListView) findViewById(R.id.deviceListView);
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, DeviceName);
+            final ListView listView = (ListView) findViewById(R.id.deviceListView);
+            final ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, DeviceName);
 
             listView.setAdapter(adapter);
 
@@ -53,6 +55,29 @@ public class MainActivity extends Activity {
                     startAppList(deviceList.get(position).getDeviceID(), deviceList.get(position).getDeviceName());
                 }
             });
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                    builder.setTitle("Delete?");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deviceList.remove(position);
+                            adapter.setNotifyOnChange(true);
+                            db.execSQL("DELETE FROM apps WHERE id = '" + deviceList.get(position).getDeviceID() + "';");
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    builder.create();
+                    return true;
+                }
+            });
+
             deviceCursor.close();
         }
         if(device != null) {
