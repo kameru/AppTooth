@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,7 +26,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         DBManager dbManager = new DBManager(this);
-        final SQLiteDatabase db = dbManager.getReadableDatabase();
+        final SQLiteDatabase db = dbManager.getWritableDatabase();
 
         Intent intent = getIntent();
 
@@ -58,14 +57,15 @@ public class MainActivity extends Activity {
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("Delete?");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            deviceList.remove(position);
-                            adapter.setNotifyOnChange(true);
                             db.execSQL("DELETE FROM apps WHERE id = '" + deviceList.get(position).getDeviceID() + "';");
+                            db.execSQL("DELETE FROM devices WHERE deviceId = '" + deviceList.get(position).getDeviceID() + "';");
+                            deviceList.remove(position);
+                            adapter.notifyDataSetChanged();
                         }
                     });
                     builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -73,11 +73,11 @@ public class MainActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     });
-                    builder.create();
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                     return true;
                 }
             });
-
             deviceCursor.close();
         }
         if(device != null) {
@@ -93,21 +93,6 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void startAppList(String key, String name) {
