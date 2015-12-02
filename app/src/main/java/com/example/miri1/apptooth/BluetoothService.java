@@ -44,12 +44,12 @@ public class BluetoothService extends IntentService {
         dbManager = new DBManager(this);
         db = dbManager.getWritableDatabase();
 
-        setData();
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         MAC = intent.getStringExtra("address");
+        setData();
 
         final Thread mThread = new Thread() {
             @Override
