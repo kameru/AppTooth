@@ -23,7 +23,7 @@ public class BluetoothService extends IntentService {
     private ActivityManager activityManager;
     private Boolean running = true;
     private String launcher;
-    private String MAC;
+    private String deviceId;
 
     SQLiteDatabase db;
     DBManager dbManager;
@@ -48,7 +48,7 @@ public class BluetoothService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        MAC = intent.getStringExtra("address");
+        deviceId = intent.getStringExtra("address");
         setData();
 
         final Thread mThread = new Thread() {
@@ -88,18 +88,18 @@ public class BluetoothService extends IntentService {
         while(itr.hasNext()){
             AppInfo appInfo = (AppInfo) itr.next();
             cursor = db.rawQuery("SELECT * FROM apps " +
-                    "WHERE id = '"+ appInfo.getPackageName()+ "' and deviceId = '"+ MAC + "';",null );
+                    "WHERE id = '"+ appInfo.getPackageName()+ "' and deviceId = '"+ deviceId + "';",null );
             cursor.moveToFirst();
             if(cursor.getCount() != 0)
             {
                 sql = "UPDATE apps SET runningTime = '" + appInfo.getRunningTime() +
-                        "' WHERE id = '" + appInfo.getPackageName() + "' and deviceId = '"+ MAC +"';";
+                        "' WHERE id = '" + appInfo.getPackageName() + "' and deviceId = '"+ deviceId +"';";
                 db.execSQL(sql);
             }
             else{
                 ContentValues values = new ContentValues();
                 values.put("id", appInfo.getPackageName());
-                values.put("deviceId",MAC);
+                values.put("deviceId", deviceId);
                 values.put("name", appInfo.getAppName());
                 values.put("runningTime", appInfo.getRunningTime());
                 db.insert("apps",null,values);
@@ -126,7 +126,7 @@ public class BluetoothService extends IntentService {
         Cursor cursor;
 
         cursor = db.rawQuery("SELECT * FROM apps " +
-                "WHERE deviceId = '" + MAC + "';", null);
+                "WHERE deviceId = '" + deviceId + "';", null);
 
         cursor.moveToFirst();
         while (cursor.moveToNext()) {
