@@ -50,6 +50,7 @@ public class BluetoothService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         MAC = intent.getStringExtra("address");
+
         final Thread mThread = new Thread() {
             @Override
             public void run() {
