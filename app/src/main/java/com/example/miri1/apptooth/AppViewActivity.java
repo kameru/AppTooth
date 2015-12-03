@@ -65,7 +65,7 @@ public class AppViewActivity extends Activity {
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.execSQL("DELETE FROM apps WHERE pName = '" + infoList.get(position).getPackageName() + "and deviceId ='" + deviceKey + "';");
+                            db.execSQL("DELETE FROM apps WHERE pName = '" + infoList.get(position).getPackageName() + "' and deviceId ='" + deviceKey + "';");
                             infoList.remove(position);
                             adapter.notifyDataSetChanged();
                         }
