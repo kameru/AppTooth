@@ -105,9 +105,11 @@ public class BluetoothService extends IntentService {
                 db.insert("apps",null,values);
             }
         }
+        SystemClock.sleep(1000);
         if(cursor != null) {
             cursor.close();
         }
+        db.close();
         super.onDestroy();
     }
 

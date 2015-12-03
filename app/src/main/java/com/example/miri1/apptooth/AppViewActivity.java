@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class AppViewActivity extends Activity {
     ActionBar actionBar;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +26,7 @@ public class AppViewActivity extends Activity {
         setContentView(R.layout.activity_app_view);
 
         DBManager dbManager = new DBManager(this);
-        final SQLiteDatabase db = dbManager.getWritableDatabase();
+        db = dbManager.getWritableDatabase();
 
         Intent intent = getIntent();
 
@@ -95,5 +96,11 @@ public class AppViewActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        db.close();
+        super.onDestroy();
     }
 }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     ActionBar actionBar;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +27,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         DBManager dbManager = new DBManager(this);
-        final SQLiteDatabase db = dbManager.getWritableDatabase();
+        db = dbManager.getWritableDatabase();
 
         Intent intent = getIntent();
 
@@ -93,6 +94,11 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+    @Override
+    protected void onDestroy() {
+        db.close();
+        super.onDestroy();
     }
 
     public void startAppList(String key, String name) {
