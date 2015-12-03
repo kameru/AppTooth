@@ -18,6 +18,7 @@ public class DBManager extends SQLiteOpenHelper{
     private static final String KEY_DEVICE_NAME = "name";
 
     private static final String KEY_APP_ID = "id";
+    private static final String KEY_APP_PACKGE_NAME = "pName";
     private static final String KEY_DEVICE_ID_FK = "deviceId";
     private static final String KEY_APP_NAME = "name";
     private static final String KEY_APP_TIME = "runningTime";
@@ -42,7 +43,8 @@ public class DBManager extends SQLiteOpenHelper{
 
         String CREATE_APP_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_APPS +
                 "(" +
-                    KEY_APP_ID + " TEXT PRIMARY KEY," +
+                    KEY_APP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    KEY_APP_PACKGE_NAME + " TEXT," +
                     KEY_DEVICE_ID_FK + " TEXT REFERENCE, " +
                     KEY_APP_NAME + " TEXT," +
                     KEY_APP_TIME + " INTEGER" +

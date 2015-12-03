@@ -88,27 +88,28 @@ public class BluetoothService extends IntentService {
         while(itr.hasNext()){
             AppInfo appInfo = (AppInfo) itr.next();
             cursor = db.rawQuery("SELECT * FROM apps " +
-                    "WHERE id = '"+ appInfo.getPackageName()+ "' and deviceId = '"+ deviceId + "';",null );
+                    "WHERE pName = '"+ appInfo.getPackageName()+ "' and deviceId = '"+ deviceId + "';",null );
             cursor.moveToFirst();
             if(cursor.getCount() != 0)
             {
                 sql = "UPDATE apps SET runningTime = '" + appInfo.getRunningTime() +
-                        "' WHERE id = '" + appInfo.getPackageName() + "' and deviceId = '"+ deviceId +"';";
+                        "' WHERE pName = '" + appInfo.getPackageName() + "' and deviceId = '"+ deviceId +"';";
                 db.execSQL(sql);
             }
             else{
                 ContentValues values = new ContentValues();
-                values.put("id", appInfo.getPackageName());
+                values.put("pName", appInfo.getPackageName());
                 values.put("deviceId", deviceId);
                 values.put("name", appInfo.getAppName());
                 values.put("runningTime", appInfo.getRunningTime());
                 db.insert("apps",null,values);
             }
         }
+        super.onDestroy();
+
         if(cursor != null) {
             cursor.close();
         }
-        super.onDestroy();
     }
 
     public String getAppName(String packageName) {
@@ -130,8 +131,8 @@ public class BluetoothService extends IntentService {
 
         cursor.moveToFirst();
         while (cursor.moveToNext()) {
-            AppInfo appInfo = new AppInfo(cursor.getString(0), cursor.getInt(3));
-            appInfo.setAppName(cursor.getString(2));
+            AppInfo appInfo = new AppInfo(cursor.getString(1), cursor.getInt(4));
+            appInfo.setAppName(cursor.getString(3));
         }
         cursor.close();
     }

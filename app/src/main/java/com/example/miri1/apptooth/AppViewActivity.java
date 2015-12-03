@@ -30,7 +30,7 @@ public class AppViewActivity extends Activity {
 
         Intent intent = getIntent();
 
-        String deviceKey = intent.getStringExtra("address");
+        final String deviceKey = intent.getStringExtra("address");
         String deviceName = intent.getStringExtra("name");
 
         actionBar = getActionBar();
@@ -42,7 +42,7 @@ public class AppViewActivity extends Activity {
             final ArrayList<AppInfo> infoList = new ArrayList<>();
 
             while (appCursor.moveToNext()) {
-                infoList.add(new AppInfo(appCursor.getString(0), appCursor.getString(2), appCursor.getInt(3)));
+                infoList.add(new AppInfo(appCursor.getString(1), appCursor.getString(3), appCursor.getInt(4)));
             }
 
             ListView listView = (ListView) findViewById(R.id.appListView);
@@ -65,7 +65,7 @@ public class AppViewActivity extends Activity {
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.execSQL("DELETE FROM apps WHERE id = '" + infoList.get(position).getPackageName() + "';");
+                            db.execSQL("DELETE FROM apps WHERE pName = '" + infoList.get(position).getPackageName() + "and deviceId ='" + deviceKey + "';");
                             infoList.remove(position);
                             adapter.notifyDataSetChanged();
                         }

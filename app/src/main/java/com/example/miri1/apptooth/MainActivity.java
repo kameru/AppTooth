@@ -63,8 +63,8 @@ public class MainActivity extends Activity {
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.execSQL("DELETE FROM apps WHERE id = '" + deviceList.get(position).getDeviceID() + "';");
-                            db.execSQL("DELETE FROM devices WHERE deviceId = '" + deviceList.get(position).getDeviceID() + "';");
+                            db.execSQL("DELETE FROM apps WHERE deviceId = '" + deviceList.get(position).getDeviceID() + "';");
+                            db.execSQL("DELETE FROM devices WHERE id = '" + deviceList.get(position).getDeviceID() + "';");
                             deviceList.remove(position);
                             adapter.notifyDataSetChanged();
                         }
